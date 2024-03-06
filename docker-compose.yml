@@ -1,0 +1,33 @@
+version: '3'
+
+services:
+  postgres:
+    hostname: postgres.facilitajuridico
+    container_name: facilitajuridico_postgres
+    image: bitnami/postgresql
+    env_file:
+      - .env
+    volumes:
+      - ./src/backend/database/CreateTableScript.sql:/docker-entrypoint-initdb.d/CreateTableScript.sql
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRESQL_USERNAME=${DB_USER}
+      - POSTGRESQL_PASSWORD=${DB_PASSWORD}
+      - POSTGRESQL_DATABASE=${DB_DATABASE}
+    networks:
+      - facilitajuridico
+
+  next:
+    container_name: facilitajuridico_next 
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - 3000:3000
+    networks:
+      - facilitajuridico
+  
+networks:
+  facilitajuridico:
+    driver: bridge
